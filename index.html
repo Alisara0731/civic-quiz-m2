@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>เกมตอบคำถาม: พลเมืองดีในระบอบประชาธิปไตย</title>
+<link href="https://fonts.googleapis.com/css2?family=Mali:wght@500;700&family=Sarabun:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fff7e0;--ink:#1d2b4f;--card:#ffffff;--a:#ef476f;--b:#118ab2;--c:#06a77d;--d:#f2a900;--sh:#1d2b4f;--ok:#06a77d;--no:#d62839;--soft:#fff0c2}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#16203a;--ink:#f5efdc;--card:#22305a;--sh:#0a1020;--soft:#2c3c6e}}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Sarabun',sans-serif;font-size:18px;line-height:1.6;min-height:100vh}
+h1,h2,.opt b,button{font-family:'Mali','Sarabun',sans-serif}
+.wrap{max-width:720px;margin:0 auto;padding:16px}
+.card{background:var(--card);border:3px solid var(--ink);border-radius:20px;padding:20px;box-shadow:0 8px 0 var(--sh);margin-bottom:16px}
+h1{font-size:clamp(26px,6vw,38px);line-height:1.25;margin:0 0 8px}
+h2{font-size:22px;margin:0 0 10px;line-height:1.4}
+.btn{display:inline-block;border:3px solid var(--ink);background:var(--d);color:#1d2b4f;font-size:20px;font-weight:700;padding:10px 26px;border-radius:16px;cursor:pointer;box-shadow:0 6px 0 var(--sh);transition:transform .08s,box-shadow .08s}
+.btn:active{transform:translateY(6px);box-shadow:0 0 0 var(--sh)}
+.btn:focus-visible,.opt:focus-visible{outline:4px solid var(--b);outline-offset:3px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px;font-weight:600;margin-bottom:10px}
+.timer{width:62px;height:62px;border-radius:50%;border:4px solid var(--ink);display:grid;place-items:center;font:700 24px 'Mali';background:var(--soft)}
+.timer.low{background:var(--no);color:#fff}
+.bar{height:12px;border:2px solid var(--ink);border-radius:8px;background:var(--soft);overflow:hidden;margin-bottom:14px}
+.bar i{display:block;height:100%;background:var(--c);width:100%}
+.opts{display:grid;gap:14px;margin-top:14px}
+.opt{display:flex;align-items:center;gap:12px;text-align:left;width:100%;border:3px solid var(--ink);border-radius:16px;padding:12px 14px;font:500 17px 'Sarabun';color:#fff;cursor:pointer;box-shadow:0 6px 0 var(--sh);transition:transform .08s,box-shadow .08s}
+.opt:active:not(:disabled){transform:translateY(6px);box-shadow:0 0 0 var(--sh)}
+.opt b{background:#fff;color:#1d2b4f;border-radius:50%;min-width:36px;height:36px;display:grid;place-items:center;font-size:18px}
+.o0{background:var(--a)}.o1{background:var(--b)}.o2{background:#058a68}.o3{background:#a86f00}
+.opt:disabled{cursor:default;opacity:.55}
+.opt.right{opacity:1;outline:5px solid var(--ok);outline-offset:2px}
+.opt.wrong{opacity:1;outline:5px dashed var(--no);outline-offset:2px}
+.exp{margin-top:16px;padding:14px;border-radius:14px;background:var(--soft);border:2px dashed var(--ink)}
+.exp .v{font:700 20px 'Mali'}
+.hide{display:none}
+.sum li{margin-bottom:8px}
+.score{font:700 54px 'Mali';line-height:1.1}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+ <div id="start" class="card">
+  <h1>🏛️ ตอบให้ไว ใจพลเมืองดี!</h1>
+  <p>เกมตอบคำถาม ม.2 เรื่อง <b>พลเมืองดีในระบอบประชาธิปไตย</b> มี 10 ข้อ ข้อละ <b>30 วินาที</b> ตอบถูกได้ 1 คะแนน อ่านเหตุผลหลังตอบทุกข้อนะ</p>
+  <button class="btn" id="go">เริ่มเล่นเลย!</button>
+ </div>
+ <div id="game" class="card hide">
+  <div class="top"><span id="no"></span><span id="sc"></span><div class="timer" id="tm">30</div></div>
+  <div class="bar"><i id="bar"></i></div>
+  <h2 id="q"></h2>
+  <div class="opts" id="opts"></div>
+  <div id="exp" class="exp hide"><div class="v" id="v"></div><div id="why"></div><p style="text-align:center;margin:14px 0 0"><button class="btn" id="next">ข้อต่อไป</button></p></div>
+ </div>
+ <div id="end" class="card hide">
+  <h1>🎉 จบเกมแล้ว!</h1>
+  <div class="score" id="fs"></div><p id="rank"></p>
+  <h2>สรุปความรู้</h2>
+  <ul class="sum">
+   <li><b>สิทธิ</b> คือสิ่งที่เราพึงมีพึงได้ เช่น สิทธิเรียนหนังสือ สิทธิแสดงความเห็น</li>
+   <li><b>หน้าที่</b> คือสิ่งที่ต้องทำ เช่น ทำการบ้าน รักษาความสะอาด เสียภาษี</li>
+   <li><b>เสรีภาพ</b> มีได้เท่าที่ไม่ไปละเมิดสิทธิผู้อื่น</li>
+   <li><b>ความเสมอภาค</b> คือทุกคนได้รับการปฏิบัติอย่างเป็นธรรม ไม่เลือกปฏิบัติ</li>
+   <li><b>กฎหมายและกฎกติกา</b> ช่วยให้ทุกคนอยู่ร่วมกันอย่างสงบ ต้องเคารพแม้ไม่มีใครมองอยู่</li>
+   <li><b>เคารพความเห็นต่าง</b> ฟังก่อน ใช้เหตุผล ไม่ใช้อารมณ์หรือความรุนแรง</li>
+   <li><b>มีส่วนร่วม</b> เช่น เลือกตั้งสภานักเรียน ช่วยกิจกรรมโรงเรียน และดูแลของส่วนรวม</li>
+  </ul>
+  <button class="btn" id="again">เล่นอีกครั้ง</button>
+ </div>
+</div>
+<script>
+const Q=[
+["สิทธิและหน้าที่","นักเรียนมีสิทธิได้รับการศึกษา สิ่งใดคือ “หน้าที่” ที่ควรทำคู่กัน?",["ตั้งใจเรียนและไม่รบกวนการเรียนของเพื่อน","มาโรงเรียนสายได้เพราะมีสิทธิ","เลือกเรียนเฉพาะวิชาที่ชอบ","ให้เพื่อนทำการบ้านแทน"],0,"สิทธิกับหน้าที่ต้องไปด้วยกันเสมอ เมื่อเรามีสิทธิเรียน เราก็มีหน้าที่ตั้งใจเรียนและไม่ทำให้ผู้อื่นเสียโอกาสเรียนด้วย"],
+["เสรีภาพ","มีเสรีภาพในการแสดงความคิดเห็น แต่ข้อใดเป็นการใช้เสรีภาพที่เหมาะสม?",["โพสต์ล้อเลียนรูปเพื่อนในกลุ่มแชต","เสนอความเห็นในคาบเรียนอย่างสุภาพ","ตะโกนขัดจังหวะขณะครูสอน","แชร์ข่าวที่ยังไม่ตรวจสอบ"],1,"เสรีภาพคือการทำสิ่งที่ต้องการได้ โดยไม่ละเมิดสิทธิผู้อื่น การเสนอความเห็นอย่างสุภาพจึงเหมาะสมที่สุด"],
+["ความเสมอภาค","ครูให้ทุกห้องใช้สนามกีฬาตามตารางที่กำหนด ไม่ว่าห้องไหนก็ตาม นี่คือหลักใด?",["ความเสมอภาค","การแบ่งพวก","การเลือกที่รักมักที่ชัง","การใช้อภิสิทธิ์"],0,"ความเสมอภาคคือทุกคนได้รับการปฏิบัติอย่างเป็นธรรมตามกติกาเดียวกัน ไม่ว่าจะเป็นห้องไหนหรือใครก็ตาม"],
+["เคารพกฎหมาย","ข้อใดแสดงว่าเป็นผู้เคารพกฎหมาย แม้ไม่มีตำรวจหรือกล้องอยู่?",["ข้ามถนนบนทางม้าลายเมื่อไฟเขียวให้คนเดิน","ฝ่าไฟแดงเมื่อถนนว่าง","จอดมอเตอร์ไซค์บนทางเท้าแค่แป๊บเดียว","ไม่สวมหมวกกันน็อกเพราะไม่มีใครเห็น"],0,"การเคารพกฎหมายคือทำตามกติกาด้วยความเข้าใจว่ากฎมีไว้ปกป้องทุกคน ไม่ใช่ทำเพราะกลัวถูกจับ"],
+["ความเห็นต่าง","ในห้องโหวตเลือกกิจกรรมวันกีฬาสี เพื่อนเสนอความเห็นต่างจากเรา ควรทำอย่างไร?",["ฟังเหตุผลก่อน แล้วพูดคุยหาข้อสรุปร่วมกัน","เลิกคุยกับเพื่อนคนนั้น","ล็อบบี้ให้ทุกคนไม่เห็นด้วยกับเขา","บังคับให้เพื่อนยอมตาม"],0,"ประชาธิปไตยเริ่มจากการรับฟัง เราไม่จำเป็นต้องเห็นด้วยทุกเรื่อง แต่ต้องเคารพสิทธิของผู้อื่นที่จะคิดต่าง"],
+["การมีส่วนร่วม","โรงเรียนเปิดเลือกตั้งสภานักเรียน วิธีใดแสดงว่าเป็นพลเมืองที่มีส่วนร่วม?",["ไปลงคะแนนหลังศึกษานโยบายผู้สมัคร","ไม่ไปเพราะคิดว่าเสียงเดียวไม่มีความหมาย","เลือกคนที่ให้ขนมแลกคะแนน","ให้เพื่อนเลือกให้"],0,"เสียงของเราสำคัญ การศึกษานโยบายแล้วตัดสินใจเองคือการมีส่วนร่วมที่ดี และไม่ควรขายเสียงเพื่อสิ่งของ"],
+["ส่วนรวม","เห็นก๊อกน้ำในห้องน้ำโรงเรียนเปิดทิ้งไว้ ควรทำอย่างไร?",["ปิดก๊อกน้ำ หรือแจ้งครู","เดินผ่านไป เพราะไม่ใช่ของเรา","เปิดเล่นต่ออีกหน่อย","ถ่ายคลิปเพื่อล้อเพื่อน"],0,"ของส่วนรวมเป็นของทุกคน การช่วยดูแลคือความรับผิดชอบของพลเมือง ไม่ต้องรอให้ใครสั่ง"],
+["ความรับผิดชอบ","เราทำแจกันของห้องแตกโดยไม่ตั้งใจ ข้อใดเหมาะสมที่สุด?",["บอกครูตามตรง และช่วยทำความสะอาด","โทษเพื่อนที่นั่งใกล้ๆ","ซ่อนเศษแจกันไว้","แกล้งทำเป็นไม่รู้"],0,"ความรับผิดชอบคือยอมรับผลการกระทำของตัวเอง ความซื่อสัตย์ทำให้เราได้รับความไว้วางใจ"],
+["การตัดสินใจ","ห้องของเราลงมติเลือกสีเสื้อ และเสียงข้างมากเลือกสีที่เราไม่ชอบ ควรทำอย่างไร?",["ยอมรับมติ โดยยังเสนอความเห็นได้ในครั้งต่อไป","ไม่ใส่เสื้อห้องเลย","ว่าเพื่อนที่เลือกสีนั้น","ขอแก้มติจนกว่าจะชนะ"],0,"ประชาธิปไตยใช้เสียงข้างมากตัดสิน โดยเคารพเสียงข้างน้อย เมื่อมีมติแล้วเรายอมรับได้ และยังพูดเสนอใหม่อย่างสุภาพได้"],
+["ข่าวและโลกออนไลน์","ได้รับข้อความแชร์ต่อกันว่า “ปิดเรียนพรุ่งนี้” แต่ไม่รู้ที่มา ควรทำอย่างไรก่อนแชร์?",["ตรวจสอบกับประกาศทางการของโรงเรียน","แชร์ไปก่อนเผื่อเป็นประโยชน์","แต่งเติมให้น่าสนใจขึ้น","ส่งต่อเฉพาะเพื่อนที่ไม่ชอบ"],0,"พลเมืองที่ดีในโลกออนไลน์ต้องคิดวิเคราะห์ ตรวจสอบข้อมูลก่อนแชร์ เพื่อไม่ให้เกิดความเข้าใจผิดในสังคม"]
+];
+const L=["ก","ข","ค","ง"];const $=id=>document.getElementById(id);
+let i=0,s=0,t=30,iv,done=false;
+function show(id){["start","game","end"].forEach(x=>$(x).classList.toggle("hide",x!==id))}
+function start(){i=0;s=0;show("game");load()}
+function load(){
+ done=false;t=30;$("exp").classList.add("hide");
+ const q=Q[i];$("no").textContent="ข้อ "+(i+1)+"/10 • "+q[0];$("sc").textContent="⭐ "+s;
+ $("q").textContent=q[1];$("opts").innerHTML="";
+ q[2].forEach((o,k)=>{const b=document.createElement("button");b.className="opt o"+k;b.innerHTML="<b>"+L[k]+"</b><span></span>";b.lastChild.textContent=o;b.onclick=()=>answer(k);$("opts").appendChild(b)});
+ tick();clearInterval(iv);iv=setInterval(()=>{t--;tick();if(t<=0)answer(-1)},1000)
+}
+function tick(){$("tm").textContent=t;$("tm").classList.toggle("low",t<=10);$("bar").style.width=(t/30*100)+"%"}
+function answer(k){
+ if(done)return;done=true;clearInterval(iv);
+ const q=Q[i];const bs=$("opts").children;
+ for(let j=0;j<4;j++){bs[j].disabled=true;if(j===q[3])bs[j].classList.add("right");else if(j===k)bs[j].classList.add("wrong")}
+ let msg;if(k===q[3]){s++;msg="✅ ถูกต้อง! เก่งมาก"}else if(k===-1)msg="⏰ หมดเวลา! คำตอบคือ ข้อ "+L[q[3]];else msg="❌ ยังไม่ถูก คำตอบคือ ข้อ "+L[q[3]];
+ $("sc").textContent="⭐ "+s;$("v").textContent=msg;$("why").textContent="เหตุผล: "+q[4];
+ $("next").textContent=i===9?"ดูผลคะแนน":"ข้อต่อไป";$("exp").classList.remove("hide");$("next").focus()
+}
+$("go").onclick=start;$("again").onclick=start;
+$("next").onclick=()=>{if(i===9){$("fs").textContent=s+" / 10";$("rank").textContent=s>=9?"สุดยอดพลเมืองดี! 🏆":s>=7?"เยี่ยมมาก! เกือบเต็มแล้ว 👏":s>=5?"ดีเลย! ลองอ่านสรุปแล้วเล่นอีกครั้ง 💪":"ไม่เป็นไร ลองอ่านสรุปแล้วเล่นใหม่นะ 😊";show("end")}else{i++;load()}};
+</script>
+</body>
+</html>
